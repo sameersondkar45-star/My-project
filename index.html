@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="mr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#101c2e" />
+  <title>डोंगर राईड — Hill Climb</title>
+  <style>
+    :root{color-scheme:dark;--ink:#f6f7ee;--muted:#aeb9c8;--lime:#c8f36a;--panel:rgba(12,24,39,.78)}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Noto Sans Devanagari",sans-serif;background:#101c2e;color:var(--ink)}
+    body{display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% -10%,#294564 0,#17283c 42%,#101a2a 100%);overflow-x:hidden}
+    .game-shell{width:min(1120px,100%);border:1px solid rgba(255,255,255,.12);border-radius:25px;overflow:hidden;background:#18283b;box-shadow:0 28px 90px rgba(0,0,0,.42)}
+    .topbar{height:76px;padding:0 27px;display:flex;align-items:center;justify-content:space-between;background:rgba(12,22,36,.86);border-bottom:1px solid rgba(255,255,255,.08)}
+    .brand{display:flex;align-items:center;gap:12px}.brand-icon{width:42px;height:42px;border-radius:14px;background:var(--lime);color:#14202b;display:grid;place-items:center;font-size:23px;box-shadow:0 5px 18px #c8f36a30}.brand-name{font-size:17px;font-weight:800;letter-spacing:.2px}.brand-sub{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:1.7px;text-transform:uppercase}
+    .top-right{display:flex;align-items:center;gap:10px}.quick-start{height:39px;padding:0 15px;border:0;border-radius:12px;background:var(--lime);color:#152131;font:inherit;font-size:12px;font-weight:950;letter-spacing:.7px;cursor:pointer;box-shadow:0 5px 16px #c8f36a35}.quick-start:hover{filter:brightness(1.08);transform:translateY(-1px)}.best-badge,.sound-btn{height:38px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.045);border-radius:12px;padding:0 13px;display:flex;align-items:center;gap:7px;color:#e8edf4;font-size:12px;font-weight:700}.best-badge b{color:var(--lime)}.sound-btn{width:40px;justify-content:center;padding:0;cursor:pointer;font-size:16px}
+    .stage{position:relative;aspect-ratio:16/9;background:#a7d9e3;overflow:hidden;touch-action:none}.stage canvas{display:block;width:100%;height:100%}
+    .hud{position:absolute;inset:18px 20px auto;display:flex;justify-content:space-between;pointer-events:none}.stats{display:flex;gap:9px}.stat{min-width:91px;padding:9px 13px 8px;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:rgba(14,29,44,.76);backdrop-filter:blur(8px);box-shadow:0 5px 16px #08132120}.stat-label{font-size:9px;color:#bdcad3;letter-spacing:1.3px;font-weight:800}.stat-value{font-size:19px;font-weight:850;line-height:1.25}.stat-value small{font-size:11px;color:#c3ced4}.coin-num{color:#ffd45a}.distance-num{color:#fff}
+    .speed-panel{width:95px;text-align:right;padding:7px 12px;border-radius:13px;background:rgba(14,29,44,.76);border:1px solid rgba(255,255,255,.16)}.speed-value{font-size:24px;font-weight:900;line-height:1}.speed-value span{font-size:10px;color:#c1ccd4;font-weight:700}.speed-label{font-size:9px;color:#bdcad3;letter-spacing:1.3px;font-weight:800;margin-top:3px}
+    .overlay{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(90deg,rgba(12,25,39,.2),rgba(12,25,39,.36));transition:opacity .2s}.overlay.hidden{opacity:0;pointer-events:none}.card{width:min(390px,calc(100% - 32px));padding:28px 30px 25px;border:1px solid rgba(255,255,255,.19);border-radius:23px;background:rgba(13,27,43,.88);box-shadow:0 20px 60px #10203455;text-align:center;backdrop-filter:blur(12px)}.eyebrow{font-size:10px;font-weight:900;letter-spacing:2.4px;color:var(--lime);text-transform:uppercase}.card h1{margin:9px 0 7px;font-size:31px;letter-spacing:-1px}.card p{margin:0 auto 19px;max-width:310px;font-size:13px;line-height:1.75;color:#c1ccd5}.instructions{display:flex;justify-content:center;gap:15px;margin:0 0 21px;color:#bdc9d2;font-size:11px}.keycap{display:inline-grid;place-items:center;min-width:23px;height:23px;padding:0 5px;margin-right:4px;border:1px solid #586779;border-bottom-width:3px;border-radius:6px;color:#f5f6f2;font-weight:800}.primary{width:100%;border:0;border-radius:13px;padding:13px 17px;background:var(--lime);color:#152131;font:inherit;font-weight:900;font-size:14px;cursor:pointer;box-shadow:0 7px 18px #c8f36a30;transition:transform .15s,filter .15s}.primary:hover{transform:translateY(-2px);filter:brightness(1.06)}.overlay.gameover{background:rgba(9,18,30,.47)}.result-line{display:flex;justify-content:center;gap:24px;margin:4px 0 20px}.result-line div{font-size:10px;color:#bac6d0;letter-spacing:1px;font-weight:800}.result-line strong{display:block;margin-top:4px;color:#fff;font-size:21px;letter-spacing:0}.result-line .gold{color:#ffd45a}
+    .footer{height:60px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:#142337;color:#afbdc9;font-size:11px}.hint{display:flex;align-items:center;gap:7px}.hint b{color:#ecf0ec}.tip{color:#c8f36a}
+    .mobile-controls{display:none;position:absolute;inset:auto 14px 13px;justify-content:space-between;align-items:flex-end;pointer-events:none}.control-group{display:flex;gap:9px;pointer-events:auto}.control{width:65px;height:58px;border:1px solid #ffffff50;border-radius:17px;background:#102236b8;color:white;font-size:22px;font-weight:900;box-shadow:0 5px 15px #0b192555;touch-action:none;user-select:none}.control.go{width:82px;background:#c8f36ae8;color:#152131;font-size:12px;letter-spacing:.8px}.control:active{transform:scale(.95);filter:brightness(1.2)}
+    @media(max-width:650px){body{padding:0;display:block}.game-shell{width:100%;min-height:100vh;border:0;border-radius:0;display:flex;flex-direction:column}.topbar{height:64px;padding:0 16px}.brand-icon{width:37px;height:37px}.brand-name{font-size:15px}.best-badge{height:34px;padding:0 9px;font-size:11px}.quick-start{height:34px;padding:0 10px;font-size:10px}.sound-btn{height:35px;width:36px}.stage{aspect-ratio:4/3;flex:1;max-height:72vh;min-height:340px}.hud{inset:12px 11px auto}.stats{gap:6px}.stat{min-width:70px;padding:7px 9px}.stat-value{font-size:16px}.stat-label{font-size:8px}.speed-panel{width:72px;padding:6px 8px}.speed-value{font-size:20px}.mobile-controls{display:flex}.footer{min-height:57px;padding:0 13px;font-size:9px}.hint{gap:4px}.card{padding:23px 22px 20px}.card h1{font-size:27px}.overlay .instructions{display:none}.overlay .card p{margin-bottom:17px}}
+    @media(max-width:380px){.brand-sub{font-size:9px}.best-badge{font-size:10px}.stat{min-width:64px;padding-left:7px;padding-right:7px}.footer .tip{display:none}}
+  </style>
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <div class="brand"><div class="brand-icon">🏍</div><div><div class="brand-name">डोंगर राईड</div><div class="brand-sub">HILL CLIMB ADVENTURE</div></div></div>
+      <div class="top-right"><button class="quick-start" id="quickStart" type="button" onclick="window.startHillRide && window.startHillRide()">▶ START</button><div class="best-badge">🏆 <span>बेस्ट</span> <b id="bestScore">0</b></div><button class="sound-btn" id="soundBtn" aria-label="आवाज बंद करा">🔊</button></div>
+    </header>
+    <section class="stage" id="stage" aria-label="बाईक हिल क्लाइंब गेम">
+      <canvas id="game"></canvas>
+      <div class="hud"><div class="stats"><div class="stat"><div class="stat-label">स्कोअर</div><div class="stat-value" id="score">0</div></div><div class="stat"><div class="stat-label">कॉइन्स</div><div class="stat-value coin-num">🟡 <span id="coins">0</span></div></div><div class="stat"><div class="stat-label">अंतर</div><div class="stat-value distance-num"><span id="distance">0</span> <small>m</small></div></div></div><div class="speed-panel"><div class="speed-value"><span id="speed">0</span> <span>km/h</span></div><div class="speed-label">वेग</div></div></div>
+      <div class="overlay" id="overlay"><div class="card"><div class="eyebrow">⛰️ डोंगरांची सफर</div><h1 id="overlayTitle">राईड सुरू करा!</h1><p id="overlayText">खडकाळ वाटेवर बाईक चालवा, उड्या मारा आणि जास्तीत जास्त कॉइन्स गोळा करा.</p><div class="instructions"><span><i class="keycap">→</i> वेग</span><span><i class="keycap">←</i> ब्रेक</span><span><i class="keycap">↑ ↓</i> बॅलन्स</span></div><button class="primary" id="startBtn">खेळ सुरू करा <span>→</span></button></div></div>
+      <div class="mobile-controls"><div class="control-group"><button class="control" data-action="brake" aria-label="ब्रेक">◀</button><button class="control" data-action="leanBack" aria-label="मागे झुका">↶</button></div><div class="control-group"><button class="control" data-action="leanFront" aria-label="पुढे झुका">↷</button><button class="control go" data-action="go" aria-label="वेग वाढवा">वेग वाढवा</button></div></div>
+    </section>
+    <footer class="footer"><div class="hint"><span>🎮</span><span><b>→</b> वेग &nbsp; <b>←</b> ब्रेक &nbsp; <b>↑ ↓</b> बॅलन्स</span></div><div class="tip">कॉइन्स गोळा करा · मजेत राईड करा!</div></footer>
+  </main>
+<script>
+(()=>{
+  const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),stage=document.getElementById('stage');
+  const scoreEl=document.getElementById('score'),coinsEl=document.getElementById('coins'),distanceEl=document.getElementById('distance'),speedEl=document.getElementById('speed'),bestEl=document.getElementById('bestScore');
+  const overlay=document.getElementById('overlay'),startBtn=document.getElementById('startBtn'),overlayTitle=document.getElementById('overlayTitle'),overlayText=document.getElementById('overlayText');
+  const keys={};let W=960,H=540,dpr=1,last=0,elapsed=0,coinCount=0,score=0,best=Number(localStorage.getItem('hillRideBest')||0),camera=0,shake=0,particles=[],soundOn=true,audioCtx=null,autoRide=true;
+  const bike={x:125,y:0,vy:0,vx:0,angle:0,air:false,alive:false,flip:0};
+  bestEl.textContent=best;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  function terrain(x){return 405+48*Math.sin(x*.0031)+24*Math.sin(x*.0081+1.1)+13*Math.sin(x*.015+2.1)+12*Math.sin(x*.0015+.3)}
+  function resize(){const r=stage.getBoundingClientRect();dpr=Math.min(devicePixelRatio||1,2);W=r.width;H=r.height;canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);if(!bike.alive)bike.y=terrain(bike.x)-17}
+  if('ResizeObserver' in window)new ResizeObserver(resize).observe(stage);else window.addEventListener('resize',resize);resize();
+  function roundedRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
+  function drawBackground(){
+    const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#8ccbdc');sky.addColorStop(.6,'#d3e8d6');sky.addColorStop(1,'#e9e4c0');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+    const sunX=W*.78-camera*.035;ctx.fillStyle='#fff0ae';ctx.globalAlpha=.78;ctx.beginPath();ctx.arc(sunX,88,34,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+    for(let layer=0;layer<3;layer++){
+      const parallax=[.09,.17,.26][layer],base=H*([.55,.64,.72][layer]),amp=[72,54,42][layer],step=170;
+      ctx.beginPath();ctx.moveTo(0,H);for(let sx=-step;sx<W+step;sx+=step){const wx=(sx+camera*parallax),peak=base-amp*(.45+.55*Math.sin(wx*.004+layer*2)**2);ctx.lineTo(sx,peak);ctx.lineTo(sx+step*.45,base-amp*.28)}ctx.lineTo(W,H);ctx.closePath();ctx.fillStyle=['#83b8b7','#649a8e','#507f68'][layer];ctx.globalAlpha=[.52,.57,.68][layer];ctx.fill();ctx.globalAlpha=1;
+    }
+    // distant tree silhouettes
+    for(let i=-1;i<Math.ceil(W/95)+2;i++){let wx=Math.floor((camera*.33+i*95)/95),sx=i*95-(camera*.33%95);const y=H*.70+20*Math.sin(wx*1.7);ctx.fillStyle='#426f62';ctx.globalAlpha=.48;ctx.beginPath();ctx.moveTo(sx,y);ctx.lineTo(sx-19,y+38);ctx.lineTo(sx+18,y+38);ctx.closePath();ctx.fill();ctx.globalAlpha=1}
+  }
+  function drawTerrain(){
+    const start=camera-80,end=camera+W+100;ctx.beginPath();ctx.moveTo(start,terrain(start));for(let x=start;x<=end;x+=8)ctx.lineTo(x,terrain(x));ctx.lineTo(end,H+20);ctx.lineTo(start,H+20);ctx.closePath();
+    const dirt=ctx.createLinearGradient(0,340,0,H);dirt.addColorStop(0,'#6b4934');dirt.addColorStop(1,'#3b4035');ctx.fillStyle=dirt;ctx.fill();
+    ctx.beginPath();for(let x=start;x<=end;x+=6){if(x===start)ctx.moveTo(x,terrain(x));else ctx.lineTo(x,terrain(x))}ctx.strokeStyle='#55683b';ctx.lineWidth=17;ctx.lineCap='round';ctx.stroke();ctx.strokeStyle='#a9b765';ctx.lineWidth=8;ctx.stroke();ctx.strokeStyle='#e5d28a';ctx.lineWidth=2;ctx.stroke();
+    // tiny stones in the soil, anchored to the world
+    for(let x=Math.floor(start/57)*57;x<end;x+=57){const yy=terrain(x)+23+((Math.sin(x*3)+1)*13);ctx.fillStyle='rgba(36,43,36,.35)';ctx.beginPath();ctx.ellipse(x,yy,4+Math.abs(Math.sin(x))*4,2.5,0,0,Math.PI*2);ctx.fill()}
+  }
+  function coinAt(index){const x=310+index*205;return{x,y:terrain(x)-66-12*Math.sin(index*1.7)}}
+  function drawCoins(dt){
+    const first=Math.max(0,Math.floor((camera-330)/205)),lastCoin=Math.floor((camera+W+250)/205);
+    for(let i=first;i<=lastCoin;i++){if(coinsTaken.has(i))continue;const c=coinAt(i),screenX=c.x-camera;const bob=Math.sin(elapsed*3+i)*4;ctx.save();ctx.translate(screenX,c.y+bob);ctx.rotate(Math.sin(elapsed*2+i)*.12);ctx.shadowColor='#ffcc43';ctx.shadowBlur=15;ctx.fillStyle='#ffc83d';ctx.beginPath();ctx.ellipse(0,0,10,13,0,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.strokeStyle='#fff0a4';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,0,5,9,0,0,Math.PI*2);ctx.stroke();ctx.restore();if(Math.hypot(bike.x-c.x,bike.y-28-c.y)<36){coinsTaken.add(i);coinCount++;score+=100;burst(c.x,c.y,'#ffd34f',11);beep(740,.065)}}
+  }
+  const coinsTaken=new Set();
+  function drawBike(){
+    const slope=Math.atan2(terrain(bike.x+27)-terrain(bike.x-27),54);const a=bike.angle;
+    ctx.save();ctx.translate(bike.x-camera,bike.y);ctx.rotate(a);
+    // subtle shadow
+    ctx.fillStyle='rgba(23,36,29,.24)';ctx.beginPath();ctx.ellipse(0,20,43,7,0,0,Math.PI*2);ctx.fill();
+    // wheels
+    for(const wx of [-27,27]){ctx.fillStyle='#202a31';ctx.beginPath();ctx.arc(wx,0,16,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#a9b6ae';ctx.lineWidth=3;ctx.beginPath();ctx.arc(wx,0,10,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#53646a';ctx.lineWidth=1.5;for(let j=0;j<6;j++){const q=j*Math.PI/3;ctx.beginPath();ctx.moveTo(wx,0);ctx.lineTo(wx+9*Math.cos(q),9*Math.sin(q));ctx.stroke()}ctx.fillStyle='#e9e8d9';ctx.beginPath();ctx.arc(wx,0,3,0,Math.PI*2);ctx.fill()}
+    // frame and suspension
+    ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#ed653e';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-27,0);ctx.lineTo(-10,-18);ctx.lineTo(9,0);ctx.lineTo(-27,0);ctx.moveTo(-10,-18);ctx.lineTo(20,-16);ctx.lineTo(27,0);ctx.stroke();ctx.strokeStyle='#29353a';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-15,-21);ctx.lineTo(2,-21);ctx.stroke();ctx.strokeStyle='#d7d6c5';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(20,-16);ctx.lineTo(29,-27);ctx.lineTo(37,-27);ctx.stroke();
+    // rider legs, body, helmet
+    ctx.strokeStyle='#263744';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-7,-19);ctx.lineTo(-4,-34);ctx.lineTo(10,-21);ctx.stroke();ctx.strokeStyle='#f2ba76';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(5,-34);ctx.lineTo(17,-25);ctx.stroke();ctx.fillStyle='#355e9a';ctx.beginPath();ctx.moveTo(-13,-42);ctx.quadraticCurveTo(-3,-48,8,-39);ctx.lineTo(4,-25);ctx.lineTo(-10,-27);ctx.closePath();ctx.fill();ctx.fillStyle='#f2ba76';ctx.beginPath();ctx.arc(1,-48,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f3c948';ctx.beginPath();ctx.arc(2,-50,9,Math.PI,Math.PI*2);ctx.lineTo(11,-47);ctx.lineTo(3,-45);ctx.closePath();ctx.fill();ctx.fillStyle='#22313a';ctx.fillRect(5,-49,7,3);
+    // front light
+    ctx.fillStyle='#fff4b5';ctx.beginPath();ctx.arc(38,-27,3,0,Math.PI*2);ctx.fill();ctx.restore();
+  }
+  function burst(x,y,color,n){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=40+Math.random()*150;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.45+Math.random()*.4,color,size:2+Math.random()*3})}}
+  function updateParticles(dt){for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=170*dt;p.life-=dt;if(p.life<=0)particles.splice(i,1)}}
+  function drawParticles(){for(const p of particles){ctx.globalAlpha=Math.min(1,p.life*2);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x-camera,p.y,p.size,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}}
+  function draw(){drawBackground();drawTerrain();drawCoins();drawParticles();drawBike()}
+  function update(dt){elapsed+=dt;dt=Math.min(dt,.035);updateParticles(dt);if(bike.alive){const throttle=keys.ArrowRight||keys.d||keys.go||autoRide,brake=keys.ArrowLeft||keys.a||keys.brake;bike.vx+=((throttle?270:0)-(brake?330:0)-bike.vx*1.05)*dt;bike.vx=clamp(bike.vx,-75,250);bike.x+=bike.vx*dt;if(bike.x<35){bike.x=35;bike.vx=Math.max(0,bike.vx)}
+      const ground=(terrain(bike.x-27)+terrain(bike.x+27))/2-16;
+      const grounded=bike.y>=ground-1&&bike.vy>=0;if(!grounded)bike.vy+=790*dt;else{bike.y=ground;bike.vy=0}
+      const tilt=(keys.ArrowUp||keys.w||keys.leanBack?1:0)-(keys.ArrowDown||keys.s||keys.leanFront?1:0);const slope=Math.atan2(terrain(bike.x+27)-terrain(bike.x-27),54);bike.angle+=((slope+tilt*.52)-bike.angle)*(grounded?Math.min(1,dt*7):Math.min(1,dt*2.2));
+      if(grounded&&Math.abs(bike.angle)>1.12&&bike.vx>25){bike.flip+=dt}else bike.flip=Math.max(0,bike.flip-dt*1.4);
+      if(bike.flip>0.7||bike.y>H+80){crash()}
+      camera=Math.max(0,bike.x-W*.28);score+=Math.max(0,bike.vx)*dt*.08;distanceEl.textContent=Math.floor(bike.x/10);speedEl.textContent=Math.round(Math.max(0,bike.vx)*.72);
+      if(bike.vx>70&&Math.random()<dt*5&&grounded)particles.push({x:bike.x-25,y:terrain(bike.x-25)-4,vx:-bike.vx*.25,vy:-30-Math.random()*35,life:.3,color:'#d5bc8b',size:2+Math.random()*3});
+    }scoreEl.textContent=Math.floor(score);coinsEl.textContent=coinCount;shake=Math.max(0,shake-dt*20)}
+  function loop(t){const dt=last?Math.min((t-last)/1000,.05):0;last=t;update(dt);ctx.save();if(shake){ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake)}draw();ctx.restore();requestAnimationFrame(loop)}requestAnimationFrame(loop);
+  function begin(){score=0;coinCount=0;coinsTaken.clear();particles=[];camera=0;autoRide=true;bike.x=125;bike.y=(terrain(98)+terrain(152))/2-16;bike.vx=0;bike.vy=0;bike.angle=0;bike.flip=0;bike.alive=true;overlay.classList.add('hidden');last=performance.now();beep(520,.08)}
+  function crash(){bike.alive=false;shake=8;burst(bike.x,bike.y,'#f27652',20);beep(150,.22);const final=Math.floor(score);if(final>best){best=final;localStorage.setItem('hillRideBest',best);bestEl.textContent=best}overlay.classList.remove('hidden');overlay.classList.add('gameover');overlayTitle.textContent='राईड संपली!';overlayText.textContent='छान प्रयत्न! अजून एक राईड करून तुमचा रेकॉर्ड मोडा.';startBtn.innerHTML='पुन्हा खेळा <span>↻</span>';document.querySelector('.instructions').innerHTML='';document.querySelector('.result-line')?.remove();const result=document.createElement('div');result.className='result-line';result.innerHTML=`<div>स्कोअर<strong>${final}</strong></div><div>कॉइन्स<strong class="gold">${coinCount}</strong></div><div>अंतर<strong>${Math.floor(bike.x/10)} m</strong></div>`;startBtn.before(result)}
+  function beep(freq,duration){if(!soundOn)return;try{audioCtx??=new(window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.065,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+duration)}catch(e){}}
+  function startGame(){overlay.classList.remove('gameover');document.querySelector('.result-line')?.remove();document.querySelector('.instructions').innerHTML='<span><i class="keycap">→</i> वेग</span><span><i class="keycap">←</i> ब्रेक</span><span><i class="keycap">↑ ↓</i> बॅलन्स</span>';overlayTitle.textContent='राईड सुरू करा!';overlayText.textContent='खडकाळ वाटेवर बाईक चालवा, उड्या मारा आणि जास्तीत जास्त कॉइन्स गोळा करा.';begin()}
+  window.startHillRide=startGame;
+  let touchStartedAt=0;
+  startBtn.addEventListener('pointerup',e=>{if(e.pointerType==='touch'){e.preventDefault();touchStartedAt=performance.now();startGame()}});
+  startBtn.addEventListener('click',()=>{if(performance.now()-touchStartedAt<800){touchStartedAt=0;return}startGame()});
+  document.addEventListener('keydown',e=>{if(['ArrowRight','ArrowLeft','ArrowUp','ArrowDown',' '].includes(e.key))e.preventDefault();autoRide=false;keys[e.key]=true;if(e.key===' '&&!bike.alive)startBtn.click()});document.addEventListener('keyup',e=>keys[e.key]=false);window.addEventListener('blur',()=>Object.keys(keys).forEach(k=>keys[k]=false));
+  document.querySelectorAll('.control').forEach(btn=>{const action=btn.dataset.action;const down=e=>{e.preventDefault();autoRide=false;keys[action]=true};const up=e=>{e.preventDefault();keys[action]=false};btn.addEventListener('pointerdown',down);btn.addEventListener('pointerup',up);btn.addEventListener('pointerleave',up);btn.addEventListener('pointercancel',up)});
+  document.getElementById('soundBtn').addEventListener('click',e=>{soundOn=!soundOn;e.currentTarget.textContent=soundOn?'🔊':'🔇';e.currentTarget.setAttribute('aria-label',soundOn?'आवाज बंद करा':'आवाज सुरू करा')});
+  // Start the ride immediately on page load; the player can accelerate with the controls.
+  begin();
+})();
+</script>
+</body>
+</html>
